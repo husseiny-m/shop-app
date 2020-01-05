@@ -6,10 +6,10 @@ export const selectShopCollections = createSelector([selectShop], (shop) => shop
 
 export const selectShopCollectionsForPreview = createSelector(
   [selectShopCollections],
-  (collections) => Object.keys(collections).map((key) => collections[key])
+  (collections) => (collections ? Object.keys(collections).map((key) => collections[key]) : [])
 );
 export const selectShopCollection = (collectionId) => {
   return createSelector([selectShopCollections], (collections) => {
-    return collections[collectionId];
+    return collections ? collections[collectionId] : null;
   });
 };

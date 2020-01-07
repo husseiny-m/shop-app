@@ -26,12 +26,13 @@ class ShopePage extends React.Component {
 
     const collectionRef = firestore.collection('collections');
 
-    collectionRef.onSnapshot(async (snapshot) => {
+    collectionRef.get().then((snapshot) => {
       const collectionMap = convertCollectionsSnapshotToMap(snapshot);
       updateCollections(collectionMap);
       this.setState({ loading: false });
-    });
+    })
   }
+
   render() {
     const { match } = this.props;
     return (
@@ -58,4 +59,4 @@ const mapDispatchToProps = (dispatch) => ({
   updateCollections: (collectionMap) => dispatch(updateCollections(collectionMap))
 });
 
-export default connect(null, mapDispatchToProps)(WithSpinner(ShopePage));
+export default connect(null, mapDispatchToProps)(ShopePage);

@@ -1,10 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, lazy, Suspense } from 'react';
 import { Route } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 
-import CollectionsOverview from '../../components/collections-overview/collections-overview.component';
-import CollectionPage from '../../pages/collection/collection.component';
 import WithSpinner from '../../components/with-spinner/with-spinner.component';
 
 import { fetchCollectionsStart } from '../../redux/shop/shop.actions';
@@ -14,7 +12,12 @@ import {
 } from '../../redux/shop/shope.selectors';
 
 import './shop.styles.scss';
+import Spinner from '../../components/spinner/spinner.component';
 
+const CollectionsOverview = lazy(() =>
+  import('../../components/collections-overview/collections-overview.component')
+);
+const CollectionPage = lazy(() => import('../../pages/collection/collection.component'));
 const CollectionsOverviewWithSpinner = WithSpinner(CollectionsOverview);
 const CollectionPageWithSpinner = WithSpinner(CollectionPage);
 
@@ -25,17 +28,21 @@ const ShopePage = ({ match, fetchCollectionsStart, isCollectionFetching, isColle
 
   return (
     <div className="shop-page">
-      <Route
-        exact
-        path={`${match.path}`}
-        render={(props) => (
-          <CollectionsOverviewWithSpinner isLoading={isCollectionFetching} {...props} />
-        )}
-      />
-      <Route
-        path={`${match.path}/:collectionId`}
-        render={(props) => <CollectionPageWithSpinner isLoading={!isCollectionLoaded} {...props} />}
-      />
+      <Suspense fallback={<Spinner />}>
+        <Route
+          exact
+          path={`${match.path}`}
+          render={(props) => (
+            <CollectionsOverviewWithSpinner isLoading={isCollectionFetching} {...props} />
+          )}
+        />
+        <Route
+          path={`${match.path}/:collectionId`}
+          render={(props) => (
+            <CollectionPageWithSpinner isLoading={!isCollectionLoaded} {...props} />
+          )}
+        />
+      </Suspense>
     </div>
   );
 };
